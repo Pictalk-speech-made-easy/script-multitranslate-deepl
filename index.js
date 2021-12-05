@@ -25,38 +25,35 @@ lang.forEach(async (value) => {
     }
 
     let langData = JSON.parse(file);
-    let missingKeys = returnMissingKeys(data, langData);
-    console.log("Missing keys length: " + Object.keys(missingKeys).length);
-    if (Object.keys(missingKeys).length / 50 < 1) {
+    let missingKeys = returnMissingKeys(Object.keys(data), Object.keys(langData));
+    console.log("Missing keys length: " + missingKeys.length);
+    if (missingKeys.length / 50 < 1) {
         const params = new URLSearchParams();
         params.append("target_lang", value);
-        const langDataLength = langData.length;
-        Object.keys(missingKeys).forEach((key) => {
+        missingKeys.forEach((key) => {
             params.append("text", data[key]);
             langData[key] = "";
         });
-        console.log(params);
         const result = await axios.post("/v2/translate", params);
         for (let i = 0; i < result.data.translations.length; i++) {
-            langData[langDataLength + i] = result.data.translations[i].text;
+            langData[missingKeys[i]] = result.data.translations[i].text;
         }
     } else {
         let requests = [];
-        let requestLengths = [];
-        for (let i = 0; i < (Math.ceil(Object.keys(missingKeys).length / 50)); i++) {
+        for (let i = 0; i < (Math.ceil(missingKeys.length / 50)); i++) {
             const params = new URLSearchParams();
             params.append("target_lang", value);
             //params.append("source_lang", "EN-GB");
-            for (var j = 0; j < (Object.keys(missingKeys).length - (50 * i)) && j < 50; j++) {
-                params.append("text", data[Object.keys(missingKeys)[j + i * 50]]);
-                langData[Object.keys(missingKeys)[j + i * 50]] = "";
+            for (var j = 0; j < (missingKeys.length - (50 * i)) && j < 50; j++) {
+                params.append("text", data[missingKeys[j + i * 50]]);
+                langData[missingKeys[j + i * 50]] = "";
             }
             requests.push(axios.post("/v2/translate", params));
         }
         const results = await Promise.all(requests).catch((err) => { console.log(err) });
         for (let i = 0; i < results.length; i++) {
             for (let j = 0; j < results[i].data.translations.length; j++) {
-                langData[Object.keys(missingKeys)[i * 50 + j]] = results[i].data.translations[j].text;
+                langData[missingKeys[i * 50 + j]] = results[i].data.translations[j].text;
             }
         }
     }
@@ -68,6 +65,6 @@ function returnMissingKeys(reference, data) {
     if (!Array.isArray(data)) {
         return reference;
     } else {
-        return data.filter((val) => !reference[val]);
+        return reference.filter((val) => !data.find((value) => value == val));
     }
 }
