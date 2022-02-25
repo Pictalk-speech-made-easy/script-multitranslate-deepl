@@ -2,7 +2,7 @@ const axios = require("axios");
 const fs = require('fs');
 require('dotenv').config();
 
-const lang = ["FR", "ES", "IT", "DE", "RO"];
+const lang = ["FR", "ES", "IT", "DE", "RO", "PT", "EL"];
 
 axios.defaults.baseURL = "https://" + process.env.DEEPL_URL;
 axios.defaults.headers.common['Authorization'] = "DeepL-Auth-Key " + process.env.DEEPL_KEY;

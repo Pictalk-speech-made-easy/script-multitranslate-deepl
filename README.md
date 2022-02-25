@@ -1,1 +1,0 @@
-# script-multitranslate-deepl
