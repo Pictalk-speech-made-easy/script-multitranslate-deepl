@@ -60,6 +60,22 @@ lang.forEach(async (value) => {
     fs.writeFileSync(value + '.json', JSON.stringify(langData));
 });
 
+lang.forEach(async (value) => {
+    console.log("--- Language: " + value + " ---");
+    try {
+        const file = fs.readFileSync(value + '.json');
+        let stringFile = file.toString();
+        stringFile = stringFile.split('","').join('",\n"');
+        fs.writeFileSync(value + '.json', stringFile);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            fs.writeFileSync(value + '.json', "{}");
+            file = fs.readFileSync(value + '.json');
+        } else {
+            throw err;
+        }
+    }
+});
 
 function returnMissingKeys(reference, data) {
     if (!Array.isArray(data)) {
