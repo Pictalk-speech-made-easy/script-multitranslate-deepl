@@ -59,7 +59,7 @@ lang.forEach(async (value) => {
     }
     fs.writeFileSync(value + '.json', JSON.stringify(langData));
 });
-
+/* Maybe better minified for weight
 lang.forEach(async (value) => {
     console.log("--- Language: " + value + " ---");
     try {
@@ -76,7 +76,7 @@ lang.forEach(async (value) => {
         }
     }
 });
-
+*/
 function returnMissingKeys(reference, data) {
     if (!Array.isArray(data)) {
         return reference;
